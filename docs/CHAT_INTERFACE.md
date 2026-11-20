@@ -2,252 +2,190 @@
 
 ## Overview
 
-The Chat Interface is a ChatGPT-style message display system with full markdown rendering, syntax highlighting, and streaming text effects. It provides a modern, accessible chat experience matching ChatGPT's design patterns.
+The chat interface is the central component of the GitHub Chat Clone application, providing a ChatGPT-style message display with markdown rendering, code syntax highlighting, and streaming text effects.
 
 ## Components
 
-### 1. ChatMessage (`components/chat/ChatMessage.tsx`)
+### ChatMessage
 
-The core message component that renders individual messages with full markdown support.
+**Location**: `components/chat/ChatMessage.tsx`
 
-**Features:**
-- ✅ User and Assistant message styling
-- ✅ Avatar icons (User/Bot)
-- ✅ Markdown rendering with GitHub Flavored Markdown (GFM)
-- ✅ Syntax highlighting for code blocks
-- ✅ Custom styling for tables, links, blockquotes
-- ✅ Language labels on code blocks
-- ✅ Streaming indicator
-- ✅ Timestamp on hover
+Individual message bubble component that displays a single message with proper styling based on the role (user or assistant).
 
-**Props:**
+#### Props
+
 ```typescript
 interface ChatMessageProps {
   message: Message;
-}
-```
-
-**Message Type:**
-```typescript
-interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp: Date;
   isStreaming?: boolean;
 }
-```
 
-**Styling:**
-- User messages: White background
-- Assistant messages: Light gray background with border
-- Avatars: User (blue), Assistant (green)
-- Code blocks: Syntax highlighted with language label
-- Inline code: Highlighted with background
-- Links: Blue, open in new tab
-- Tables: Bordered with header styling
-- Blockquotes: Left border with italic text
-
-### 2. StreamingMessage (`components/chat/StreamingMessage.tsx`)
-
-Wrapper component that adds streaming text effect to messages.
-
-**Features:**
-- ✅ Character-by-character reveal
-- ✅ Configurable streaming speed
-- ✅ Typing indicator
-- ✅ Smooth animation
-
-**Props:**
-```typescript
-interface StreamingMessageProps {
-  message: Message;
-  streamingSpeed?: number; // characters per interval (default: 10)
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
 }
 ```
 
-**How it works:**
-1. Takes a message with `isStreaming: true`
-2. Reveals content progressively (10 chars every 50ms by default)
-3. Shows "Typing..." indicator while streaming
-4. Automatically stops when complete
+#### Features
 
-### 3. ChatInterface (`components/chat/ChatInterface.tsx`)
+- **Role-based styling**: User messages (right-aligned, blue) vs Assistant messages (left-aligned, gray)
+- **Markdown rendering**: Full GitHub Flavored Markdown support
+- **Code syntax highlighting**: Automatic language detection with highlight.js
+- **Timestamps**: Formatted time display for each message
+- **Streaming effect**: Optional animated text reveal for assistant messages
+- **Theme support**: Automatic light/dark theme switching
 
-The main chat interface component that combines messages, input, and empty state.
+#### Markdown Support
 
-**Features:**
-- ✅ Message list with auto-scroll
-- ✅ Empty state with welcome message
-- ✅ Message input with send button
-- ✅ Enter to send, Shift+Enter for new line
-- ✅ Loading state
-- ✅ Disabled state during processing
+The component supports:
+- **Headings**: `# H1` through `###### H6`
+- **Lists**: Ordered and unordered lists
+- **Tables**: GitHub-style tables with alignment
+- **Code blocks**: Syntax-highlighted code with language detection
+- **Inline code**: Monospace inline code
+- **Links**: Clickable hyperlinks
+- **Bold/Italic**: Text formatting
+- **Blockquotes**: Quote blocks
+- **Strikethrough**: `~~text~~`
+- **Task lists**: `- [ ]` and `- [x]`
+- **HTML**: Raw HTML rendering (sanitized)
 
-**Props:**
-```typescript
-interface ChatInterfaceProps {
-  messages: Message[];
-  isLoading?: boolean;
-  onSendMessage?: (content: string) => void;
-}
-```
-
-**Layout:**
-```
-┌─────────────────────────────────────┐
-│         Messages Area               │
-│  ┌───────────────────────────────┐  │
-│  │ User Message                  │  │
-│  └───────────────────────────────┘  │
-│  ┌───────────────────────────────┐  │
-│  │ Assistant Message             │  │
-│  │ - Markdown rendered           │  │
-│  │ - Code highlighted            │  │
-│  └───────────────────────────────┘  │
-│         (auto-scrolls)              │
-├─────────────────────────────────────┤
-│         Input Area                  │
-│  ┌───────────────────────────────┐  │
-│  │ Message ChatGPT...        [→] │  │
-│  └───────────────────────────────┘  │
-│  ChatGPT can make mistakes...       │
-└─────────────────────────────────────┘
-```
-
-## Dependencies
-
-### Installed Packages
-
-```json
-{
-  "react-markdown": "^9.0.1",
-  "remark-gfm": "^4.0.0",
-  "rehype-highlight": "^7.0.0",
-  "rehype-raw": "^7.0.0",
-  "highlight.js": "^11.10.0"
-}
-```
-
-### What Each Does
-
-| Package | Purpose |
-|---------|---------|
-| `react-markdown` | Core markdown rendering for React |
-| `remark-gfm` | GitHub Flavored Markdown support (tables, strikethrough, task lists) |
-| `rehype-highlight` | Syntax highlighting for code blocks |
-| `rehype-raw` | Allow raw HTML in markdown (use carefully) |
-| `highlight.js` | Syntax highlighting library with 190+ languages |
-
-## Markdown Features
-
-### Supported Syntax
-
-#### Text Formatting
-```markdown
-**bold text**
-*italic text*
-~~strikethrough~~
-`inline code`
-```
-
-#### Headings
-```markdown
-# H1
-## H2
-### H3
-```
-
-#### Lists
-```markdown
-- Unordered item
-- Another item
-
-1. Ordered item
-2. Another item
-
-- [ ] Task list item
-- [x] Completed task
-```
-
-#### Links
-```markdown
-[Link text](https://example.com)
-```
-
-#### Code Blocks
-````markdown
-```javascript
-const greeting = "Hello, World!";
-console.log(greeting);
-```
-````
-
-#### Tables
-```markdown
-| Header 1 | Header 2 |
-|----------|----------|
-| Cell 1   | Cell 2   |
-```
-
-#### Blockquotes
-```markdown
-> This is a blockquote
-> It can span multiple lines
-```
-
-### Syntax Highlighting
+#### Code Highlighting
 
 Supports 190+ languages including:
 - JavaScript/TypeScript
 - Python
 - Java
-- C/C++/C#
+- C/C++
 - Go
 - Rust
 - Ruby
 - PHP
-- HTML/CSS
 - SQL
+- HTML/CSS
 - Bash/Shell
 - And many more...
 
-**Usage:**
-````markdown
+### ChatInterface
+
+**Location**: `components/chat/ChatInterface.tsx`
+
+Full chat interface component that manages the message list, input field, and user interactions.
+
+#### Props
+
 ```typescript
-interface User {
-  id: number;
-  name: string;
+interface ChatInterfaceProps {
+  messages: Message[];
+  onSendMessage: (content: string) => void;
+  isLoading?: boolean;
+  placeholder?: string;
 }
 ```
-````
 
-## Usage Examples
+#### Features
+
+- **Message list**: Scrollable container with all messages
+- **Auto-scroll**: Automatically scrolls to latest message
+- **Input field**: Multi-line textarea with auto-resize
+- **Send button**: Disabled during loading state
+- **Loading indicator**: Shows when waiting for response
+- **Keyboard shortcuts**: Enter to send, Shift+Enter for new line
+- **Empty state**: Placeholder when no messages exist
+
+#### Layout
+
+```
+┌─────────────────────────────────────┐
+│  Message List (scrollable)          │
+│  ┌───────────────────────────────┐  │
+│  │ User Message                  │  │
+│  └───────────────────────────────┘  │
+│  ┌───────────────────────────────┐  │
+│  │ Assistant Message             │  │
+│  └───────────────────────────────┘  │
+│  ┌───────────────────────────────┐  │
+│  │ User Message                  │  │
+│  └───────────────────────────────┘  │
+├─────────────────────────────────────┤
+│  Input Area                         │
+│  ┌───────────────────────────────┐  │
+│  │ Type your message...          │  │
+│  └───────────────────────────────┘  │
+│                          [Send]     │
+└─────────────────────────────────────┘
+```
+
+## Types
+
+**Location**: `types/message.ts`
+
+```typescript
+export interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+```
+
+## Usage Example
 
 ### Basic Usage
 
 ```tsx
+import { useState } from "react";
 import ChatInterface from "@/components/chat/ChatInterface";
 import type { Message } from "@/types/message";
 
-function MyChat() {
+export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
-  
-  const handleSend = (content: string) => {
-    const newMessage: Message = {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSendMessage = async (content: string) => {
+    // Add user message
+    const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content,
       timestamp: new Date(),
     };
-    setMessages([...messages, newMessage]);
+    setMessages((prev) => [...prev, userMessage]);
+
+    // Simulate API call
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: content }),
+      });
+      const data = await response.json();
+
+      // Add assistant response
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.response,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  
+
   return (
-    <ChatInterface
-      messages={messages}
-      onSendMessage={handleSend}
-    />
+    <div className="h-screen">
+      <ChatInterface
+        messages={messages}
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
+        placeholder="Ask me anything..."
+      />
+    </div>
   );
 }
 ```
@@ -255,192 +193,230 @@ function MyChat() {
 ### With Streaming
 
 ```tsx
-const handleSend = (content: string) => {
-  // Add user message
-  const userMsg: Message = {
+const handleSendMessage = async (content: string) => {
+  const userMessage: Message = {
     id: Date.now().toString(),
     role: "user",
     content,
     timestamp: new Date(),
   };
-  setMessages([...messages, userMsg]);
-  
-  // Simulate AI response
-  setTimeout(() => {
-    const aiMsg: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "AI response here...",
-      timestamp: new Date(),
-      isStreaming: true, // Enable streaming
-    };
-    setMessages(prev => [...prev, aiMsg]);
-    
-    // Stop streaming after complete
-    setTimeout(() => {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === aiMsg.id
-            ? { ...msg, isStreaming: false }
-            : msg
-        )
-      );
-    }, 3000);
-  }, 1000);
+  setMessages((prev) => [...prev, userMessage]);
+
+  // Create placeholder for streaming response
+  const assistantId = (Date.now() + 1).toString();
+  const assistantMessage: Message = {
+    id: assistantId,
+    role: "assistant",
+    content: "",
+    timestamp: new Date(),
+  };
+  setMessages((prev) => [...prev, assistantMessage]);
+
+  // Stream response
+  const response = await fetch("/api/chat/stream", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: content }),
+  });
+
+  const reader = response.body?.getReader();
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { done, value } = await reader!.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === assistantId
+          ? { ...msg, content: msg.content + chunk }
+          : msg
+      )
+    );
+  }
 };
-```
-
-### Individual Message Component
-
-```tsx
-import ChatMessage from "@/components/chat/ChatMessage";
-
-<ChatMessage
-  message={{
-    id: "1",
-    role: "assistant",
-    content: "Hello! How can I help you?",
-    timestamp: new Date(),
-  }}
-/>
-```
-
-### Streaming Message Component
-
-```tsx
-import StreamingMessage from "@/components/chat/StreamingMessage";
-
-<StreamingMessage
-  message={{
-    id: "1",
-    role: "assistant",
-    content: "This text will appear character by character...",
-    timestamp: new Date(),
-    isStreaming: true,
-  }}
-  streamingSpeed={15} // Optional: chars per interval
-/>
 ```
 
 ## Styling
 
-### Design System
+### CSS Variables
 
-The components use CSS variables from `globals.css`:
-
-```css
---background: #ffffff (light) / #0d1117 (dark)
---foreground: #1f2328 (light) / #e6edf3 (dark)
---muted: #656d76 (light) / #7d8590 (dark)
---border: #d1d9e0 (light) / #30363d (dark)
---input: #f6f8fa (light) / #161b22 (dark)
---primary: #0969da (light) / #2f81f7 (dark)
---success: #1a7f37 (light) / #3fb950 (dark)
-```
-
-### Custom Styling
-
-Override styles using Tailwind classes:
-
-```tsx
-<ChatInterface
-  messages={messages}
-  className="custom-class"
-/>
-```
-
-Or use CSS:
+The components use CSS variables from `app/globals.css`:
 
 ```css
-.chat-message {
-  /* Custom styles */
+:root {
+  --background: 255 255 255;
+  --foreground: 10 10 10;
+  --input: 229 231 235;
+  --primary: 37 99 235;
+  --muted: 107 114 128;
+  --border: 229 231 235;
 }
+
+.dark {
+  --background: 10 10 10;
+  --foreground: 250 250 250;
+  --input: 38 38 38;
+  --primary: 59 130 246;
+  --muted: 156 163 175;
+  --border: 38 38 38;
+}
+```
+
+### Message Bubble Styling
+
+**User messages**:
+- Background: `rgb(var(--primary))` (blue)
+- Text: White
+- Alignment: Right
+- Max width: 70%
+
+**Assistant messages**:
+- Background: `rgb(var(--input))` (gray)
+- Text: `rgb(var(--foreground))`
+- Alignment: Left
+- Max width: 70%
+
+### Code Block Styling
+
+Code blocks use the `github-dark` theme from highlight.js with custom overrides:
+
+```css
+pre code.hljs {
+  background: rgb(13 17 23);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.hljs-keyword { color: #ff7b72; }
+.hljs-string { color: #a5d6ff; }
+.hljs-function { color: #d2a8ff; }
+.hljs-comment { color: #8b949e; }
+```
+
+## Dependencies
+
+### Required Packages
+
+```json
+{
+  "react-markdown": "^10.1.0",
+  "remark-gfm": "^4.0.1",
+  "rehype-highlight": "^7.0.2",
+  "rehype-raw": "^7.0.0",
+  "highlight.js": "^11.12.0"
+}
+```
+
+### Installation
+
+```bash
+npm install react-markdown remark-gfm rehype-highlight rehype-raw highlight.js
 ```
 
 ## Accessibility
 
 ### Keyboard Navigation
-- ✅ Tab to navigate between elements
-- ✅ Enter to send message
-- ✅ Shift+Enter for new line in textarea
 
-### Screen Readers
-- ✅ Semantic HTML (`<article>`, `<button>`, `<textarea>`)
-- ✅ ARIA labels on interactive elements
-- ✅ Alt text on icons
-- ✅ Proper heading hierarchy
+- **Tab**: Navigate between input field and send button
+- **Enter**: Send message (when input is focused)
+- **Shift+Enter**: New line in message
+- **Escape**: Clear input (optional implementation)
+
+### ARIA Labels
+
+- Input field: `aria-label="Message input"`
+- Send button: `aria-label="Send message"`
+- Message list: `role="log"` with `aria-live="polite"`
+
+### Screen Reader Support
+
+- Messages announce role and timestamp
+- Loading state announces "Sending message..."
+- New messages announce automatically
 
 ### Focus Management
-- ✅ Visible focus rings (2px primary color)
-- ✅ Focus trap in input area
-- ✅ Auto-scroll to new messages
 
-### Color Contrast
-- ✅ WCAG AA compliant (4.5:1 minimum)
-- ✅ Dark mode support
-- ✅ High contrast for important elements
+- Focus returns to input after sending
+- Visible focus rings on all interactive elements
+- Skip to input link for keyboard users
 
 ## Performance
 
 ### Optimizations
 
-1. **Memoization**: `ChatMessage` uses `React.memo` to prevent unnecessary re-renders
-2. **Lazy Loading**: Messages render only when visible (via browser's native scrolling)
-3. **Efficient Streaming**: Uses intervals instead of recursive setTimeout
-4. **Code Splitting**: Markdown libraries loaded only when needed
+1. **Memoization**: Message components memoized with `React.memo`
+2. **Virtual scrolling**: Consider for 100+ messages
+3. **Lazy loading**: Code highlighting loaded on demand
+4. **Debouncing**: Input changes debounced for auto-save
+5. **Message batching**: Multiple messages rendered in single pass
 
-### Best Practices
+### Bundle Size
 
-```tsx
-// ✅ Good: Memoize messages array
-const messages = useMemo(() => [...], [dependencies]);
+- react-markdown: ~50KB
+- highlight.js: ~80KB (full), ~5KB per language
+- Total overhead: ~130KB gzipped
 
-// ✅ Good: Debounce input
-const debouncedSend = useMemo(
-  () => debounce(handleSend, 300),
-  []
-);
+### Recommendations
 
-// ❌ Bad: Creating new array on every render
-<ChatInterface messages={[...messages]} />
-```
+- Use dynamic imports for highlight.js languages
+- Implement virtual scrolling for long conversations
+- Cache rendered markdown for repeated messages
+- Use Web Workers for heavy markdown parsing
 
 ## Testing
 
 ### Unit Tests
 
-```tsx
-import { render, screen } from '@testing-library/react';
-import ChatMessage from '@/components/chat/ChatMessage';
+```typescript
+import { render, screen } from "@testing-library/react";
+import ChatMessage from "@/components/chat/ChatMessage";
 
-test('renders user message', () => {
-  render(
-    <ChatMessage
-      message={{
-        id: '1',
-        role: 'user',
-        content: 'Hello',
-        timestamp: new Date(),
-      }}
-    />
-  );
-  
-  expect(screen.getByText('You')).toBeInTheDocument();
-  expect(screen.getByText('Hello')).toBeInTheDocument();
+test("renders user message", () => {
+  const message = {
+    id: "1",
+    role: "user" as const,
+    content: "Hello",
+    timestamp: new Date(),
+  };
+
+  render(<ChatMessage message={message} />);
+  expect(screen.getByText("Hello")).toBeInTheDocument();
+  expect(screen.getByText("You")).toBeInTheDocument();
+});
+
+test("renders markdown", () => {
+  const message = {
+    id: "1",
+    role: "assistant" as const,
+    content: "# Heading\n\n**Bold text**",
+    timestamp: new Date(),
+  };
+
+  render(<ChatMessage message={message} />);
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Heading");
+  expect(screen.getByText("Bold text")).toHaveStyle({ fontWeight: "700" });
 });
 ```
 
 ### Integration Tests
 
-```tsx
-test('sends message on Enter key', async () => {
-  const handleSend = jest.fn();
-  render(<ChatInterface messages={[]} onSendMessage={handleSend} />);
-  
-  const input = screen.getByPlaceholderText('Message ChatGPT...');
-  await userEvent.type(input, 'Test message{Enter}');
-  
-  expect(handleSend).toHaveBeenCalledWith('Test message');
+```typescript
+import { render, screen, fireEvent } from "@testing-library/react";
+import ChatInterface from "@/components/chat/ChatInterface";
+
+test("sends message on button click", () => {
+  const onSendMessage = jest.fn();
+  render(<ChatInterface messages={[]} onSendMessage={onSendMessage} />);
+
+  const input = screen.getByPlaceholderText("Type your message...");
+  const button = screen.getByText("Send");
+
+  fireEvent.change(input, { target: { value: "Test message" } });
+  fireEvent.click(button);
+
+  expect(onSendMessage).toHaveBeenCalledWith("Test message");
 });
 ```
 
@@ -448,63 +424,127 @@ test('sends message on Enter key', async () => {
 
 ### Common Issues
 
-#### Code blocks not highlighting
-**Problem**: Code appears as plain text
-**Solution**: Ensure `highlight.js/styles/github-dark.css` is imported in `globals.css`
+#### 1. Code highlighting not working
 
-#### Markdown not rendering
-**Problem**: Markdown shows as raw text
-**Solution**: Check that `react-markdown` and plugins are installed
+**Problem**: Code blocks show plain text without syntax highlighting
 
-#### Streaming not working
-**Problem**: Text appears all at once
-**Solution**: Ensure `isStreaming: true` is set on the message
-
-#### Scroll not working
-**Problem**: New messages don't auto-scroll
-**Solution**: Check that `messagesEndRef` is properly attached
-
-### Debug Mode
-
-Add console logs to track message flow:
+**Solution**: Ensure highlight.js CSS is imported in `app/layout.tsx`:
 
 ```tsx
+import "highlight.js/styles/github-dark.css";
+```
+
+#### 2. Hydration mismatch errors
+
+**Problem**: Console shows hydration warnings
+
+**Solution**: Initialize messages client-side:
+
+```tsx
+const [messages, setMessages] = useState<Message[]>([]);
+
 useEffect(() => {
-  console.log('Messages updated:', messages);
+  setMessages(getInitialMessages());
+}, []);
+```
+
+#### 3. Markdown not rendering
+
+**Problem**: Markdown shows as plain text
+
+**Solution**: Check that `react-markdown` and plugins are installed:
+
+```bash
+npm install react-markdown remark-gfm rehype-highlight rehype-raw
+```
+
+#### 4. Scroll not working
+
+**Problem**: Messages don't auto-scroll to bottom
+
+**Solution**: Ensure scroll ref is properly set:
+
+```tsx
+const scrollRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 }, [messages]);
 ```
 
 ## Future Enhancements
 
 ### Planned Features
-- [ ] Message editing
-- [ ] Message deletion
-- [ ] Copy code button
-- [ ] Message reactions
-- [ ] File attachments
-- [ ] Voice input
-- [ ] Message search
-- [ ] Export conversation
-- [ ] Custom themes
-- [ ] Message threading
+
+1. **Message editing**: Edit sent messages
+2. **Message deletion**: Delete individual messages
+3. **Copy to clipboard**: Copy message content
+4. **Code copy button**: Copy code blocks
+5. **Message reactions**: Like/dislike messages
+6. **File attachments**: Upload and display files
+7. **Voice input**: Speech-to-text
+8. **Export chat**: Download conversation as PDF/Markdown
+9. **Search messages**: Full-text search
+10. **Message threading**: Reply to specific messages
 
 ### API Integration
-- [ ] OpenAI GPT-4 integration
-- [ ] Anthropic Claude integration
-- [ ] Custom model support
-- [ ] Streaming API responses
-- [ ] Rate limiting
-- [ ] Error handling
 
-## Contributing
+```typescript
+// Example API route structure
+// app/api/chat/route.ts
 
-When adding features:
-1. Follow existing code style
-2. Add TypeScript types
-3. Update documentation
-4. Add tests
-5. Check accessibility
-6. Test in both themes
+export async function POST(request: Request) {
+  const { message } = await request.json();
+
+  // Call AI service
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: message }],
+  });
+
+  return Response.json({
+    response: response.choices[0].message.content,
+  });
+}
+```
+
+### Streaming API
+
+```typescript
+// app/api/chat/stream/route.ts
+
+export async function POST(request: Request) {
+  const { message } = await request.json();
+
+  const stream = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: message }],
+    stream: true,
+  });
+
+  const encoder = new TextEncoder();
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content || "";
+          controller.enqueue(encoder.encode(text));
+        }
+        controller.close();
+      },
+    })
+  );
+}
+```
+
+## Resources
+
+- [react-markdown documentation](https://github.com/remarkjs/react-markdown)
+- [remark-gfm plugin](https://github.com/remarkjs/remark-gfm)
+- [highlight.js documentation](https://highlightjs.org/)
+- [GitHub Markdown Guide](https://guides.github.com/features/mastering-markdown/)
+- [ChatGPT UI patterns](https://chat.openai.com/)
 
 ## License
 
