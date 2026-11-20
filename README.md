@@ -60,16 +60,23 @@ The application follows GitHub's design language with:
 
 1. **ChatContainer**: Main wrapper for the entire chat interface
 2. **Sidebar**: Channel list and navigation
-3. **ChatHeader**: Channel title and description
-4. **MessageList**: Scrollable message display with auto-scroll
-5. **MessageInput**: Text input with keyboard shortcuts (Enter to send, Shift+Enter for new line)
+3. **ChatGPTSidebar**: ChatGPT-style collapsible sidebar with chat history ([docs](./docs/CHATGPT_SIDEBAR.md))
+4. **ChatHeader**: Channel title and description
+5. **MessageList**: Scrollable message display with auto-scroll
+6. **MessageInput**: Text input with keyboard shortcuts (Enter to send, Shift+Enter for new line)
 
 ### Type Definitions
 
+#### Chat Types
 - `Message`: Chat message structure
 - `Channel`: Channel/room information
 - `User`: User profile data
 - `Reaction`: Message reactions
+
+#### ChatGPT Types
+- `ChatSession`: Individual chat session with title and timestamp
+- `ChatGroup`: Time-grouped chat sessions (Today, Yesterday, etc.)
+- `UserProfile`: User information with plan and avatar
 
 ## 🚀 Getting Started
 
@@ -157,6 +164,7 @@ Standard Next.js 15 configuration with TypeScript support.
 - `next`: ^15.0.3
 - `react`: ^18.3.1
 - `react-dom`: ^18.3.1
+- `lucide-react`: ^0.468.0 (icons)
 
 ### Development
 - `typescript`: ^5
