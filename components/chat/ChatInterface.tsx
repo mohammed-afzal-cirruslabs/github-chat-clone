@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import ChatMessage from "./ChatMessage";
 import StreamingMessage from "./StreamingMessage";
+import ChatInput from "./ChatInput";
 import type { Message } from "@/types/message";
 import { Sparkles } from "lucide-react";
 
@@ -10,15 +11,16 @@ interface ChatInterfaceProps {
   messages: Message[];
   isLoading?: boolean;
   onSendMessage?: (content: string) => void;
+  onAttachment?: (file: File) => void;
 }
 
 export default function ChatInterface({
   messages,
   isLoading = false,
   onSendMessage,
+  onAttachment,
 }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [inputValue, setInputValue] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -28,11 +30,15 @@ export default function ChatInterface({
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (inputValue.trim() && onSendMessage) {
-      onSendMessage(inputValue.trim());
-      setInputValue("");
+  const handleSendMessage = (content: string) => {
+    if (onSendMessage) {
+      onSendMessage(content);
+    }
+  };
+
+  const handleAttachment = (file: File) => {
+    if (onAttachment) {
+      onAttachment(file);
     }
   };
 
@@ -71,56 +77,11 @@ export default function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-[var(--border)] bg-[var(--background)]">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <form onSubmit={handleSubmit} className="relative">
-            <textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  const form = e.currentTarget.form;
-                  if (form) {
-                    handleSubmit(e as any);
-                  }
-                }
-              }}
-              placeholder="Message ChatGPT..."
-              disabled={isLoading}
-              rows={1}
-              className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--input)] px-4 py-3 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                minHeight: "52px",
-                maxHeight: "200px",
-              }}
-            />
-            <button
-              type="submit"
-              disabled={!inputValue.trim() || isLoading}
-              className="absolute right-2 bottom-2 p-2 rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Send message"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </button>
-          </form>
-          <p className="text-xs text-[var(--muted)] text-center mt-2">
-            ChatGPT can make mistakes. Check important info.
-          </p>
-        </div>
-      </div>
+      <ChatInput
+        onSendMessage={handleSendMessage}
+        onAttachment={onAttachment ? handleAttachment : undefined}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
