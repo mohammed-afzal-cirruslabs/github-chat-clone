@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme colors - GitHub inspired */
+  --background: #ffffff;
+  --foreground: #1f2328;
+  --muted: #656d76;
+  --border: #d1d9e0;
+  --input: #f6f8fa;
+  --primary: #0969da;
+  --primary-hover: #0860ca;
+  --secondary: #f6f8fa;
+  --secondary-hover: #eaeef2;
+  --accent: #0969da;
+  --destructive: #d1242f;
+  --success: #1a7f37;
+  --warning: #bf8700;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark theme colors - GitHub inspired */
+    --background: #0d1117;
+    --foreground: #e6edf3;
+    --muted: #7d8590;
+    --border: #30363d;
+    --input: #161b22;
+    --primary: #2f81f7;
+    --primary-hover: #4493f8;
+    --secondary: #21262d;
+    --secondary-hover: #30363d;
+    --accent: #2f81f7;
+    --destructive: #f85149;
+    --success: #3fb950;
+    --warning: #d29922;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-[var(--border)];
+  }
+  
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)];
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
